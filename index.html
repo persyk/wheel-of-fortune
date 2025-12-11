@@ -1,0 +1,113 @@
+import React, { useState } from 'react';
+import { Sparkles } from 'lucide-react';
+
+const FortuneWheel = () => {
+  const [result, setResult] = useState(null);
+  const [isSpinning, setIsSpinning] = useState(false);
+
+  const options = [
+    { text: 'УВОЛЕН ЗАВТРА', emoji: '💀', color: 'from-red-500 to-red-600' },
+    { text: 'УВОЛЕН СЕГОДНЯ', emoji: '☠️', color: 'from-red-600 to-red-700' },
+    { text: 'УВОЛЕН В ПЯТНИЦУ', emoji: '🔥', color: 'from-orange-500 to-red-500' },
+    { text: 'Повышение в 0.9 раз', emoji: '📉', color: 'from-yellow-500 to-orange-500' },
+    { text: 'Повышение нагрузки', emoji: '💼', color: 'from-blue-500 to-blue-600' },
+    { text: 'Просмотр телепузиков', emoji: '📺', color: 'from-purple-500 to-pink-500' }
+  ];
+
+  const spinWheel = () => {
+    setIsSpinning(true);
+    setResult(null);
+
+    setTimeout(() => {
+      // Weighted random: увольнения чаще (70% шанс увольнения)
+      const weights = [25, 25, 20, 10, 10, 10]; // в процентах
+      const random = Math.random() * 100;
+      let cumulative = 0;
+      let selectedIndex = 0;
+      
+      for (let i = 0; i < weights.length; i++) {
+        cumulative += weights[i];
+        if (random < cumulative) {
+          selectedIndex = i;
+          break;
+        }
+      }
+      
+      setResult(options[selectedIndex]);
+      setIsSpinning(false);
+    }, 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Колесо Фортуны
+            </h1>
+            <p className="text-gray-500 text-sm">Узнай свою судьбу!</p>
+          </div>
+
+          {/* Wheel Display */}
+          <div className="relative mb-8">
+            <div className={`
+              w-64 h-64 mx-auto rounded-full 
+              bg-gradient-to-br from-blue-500 to-purple-600
+              flex items-center justify-center
+              shadow-xl
+              ${isSpinning ? 'animate-spin' : ''}
+              transition-all duration-200
+            `}>
+              <div className="w-56 h-56 bg-white rounded-full flex items-center justify-center">
+                {!result && !isSpinning && (
+                  <Sparkles className="w-16 h-16 text-blue-500" />
+                )}
+                {isSpinning && (
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🎰</div>
+                    <div className="text-sm text-gray-600">Крутим...</div>
+                  </div>
+                )}
+                {result && !isSpinning && (
+                  <div className="text-center px-4">
+                    <div className="text-5xl mb-3">{result.emoji}</div>
+                    <div className="text-lg font-bold text-gray-800 leading-tight">
+                      {result.text}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Spin Button */}
+          <button
+            onClick={spinWheel}
+            disabled={isSpinning}
+            className={`
+              w-full py-4 rounded-2xl font-semibold text-lg
+              transition-all duration-200
+              ${isSpinning 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
+              }
+            `}
+          >
+            {isSpinning ? 'Крутим колесо...' : 'Крутить колесо'}
+          </button>
+
+
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-4 text-gray-500 text-xs">
+          Telegram Mini App • Все совпадения случайны
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FortuneWheel;
